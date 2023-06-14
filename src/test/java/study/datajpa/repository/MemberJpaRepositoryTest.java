@@ -1,5 +1,7 @@
 package study.datajpa.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ class MemberJpaRepositoryTest {
 
     @Autowired
     MemberJpaRepository memberJpaRepository;
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void testMember(){
@@ -92,5 +96,25 @@ class MemberJpaRepositoryTest {
 
         //then
         assertThat(resultCount).isEqualTo(3);
+    }
+
+    @Test
+    public void jpaEventBaseEntity() throws Exception {
+        //given
+        Member member = new Member("member1");
+        memberJpaRepository.save(member);       //@PrePersist
+
+        Thread.sleep(100);
+        member.setUsername("member2");
+
+        em.flush();                              //@PreUpdate
+        em.clear();
+
+        //when
+        Member findMember = memberJpaRepository.findById(member.getId()).get();
+
+        //then
+        System.out.println("findMember.CreatedDate = " + findMember.getCreatedDate());
+        System.out.println("findMember.UpdateDate = " + findMember.getUpdateDate());
     }
 }
