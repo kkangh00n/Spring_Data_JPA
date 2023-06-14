@@ -129,4 +129,9 @@ class MemberRepositoryTest {
 
         em.flush();     //update 쿼리 실행 X
     }
+
+    @Test
+    public void custom(){
+        List<Member> memberCustom = memberRepository.findMemberCustom();
+    }
 }
